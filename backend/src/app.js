@@ -33,7 +33,7 @@ app.use("/api/bids",bidRoutes);
 app.get('/',(req,res)=>{
     res.send('BidByte Backend is running');
 })
-
+import "./workers/auction.worker.js"
 
 const PORT=process.env.PORT || 5000;
 

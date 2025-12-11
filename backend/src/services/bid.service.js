@@ -22,9 +22,6 @@ export const placeBidService= async({amount, userId, auctionId})=>{
         if(!auction){
             throw ValidationError("Auction not found");
         }
-        if(auction.status!=="ACTIVE"){
-            throw ValidationError("Auction is not active");
-        }
         if(auction.status==="UPCOMING"){
             throw ValidationError("Auction has not started yet");
         }
