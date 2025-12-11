@@ -1,5 +1,5 @@
 import prisma from "../prisma.js";
-
+import { io } from "../app.js";
 const MIN_BID_INCREMENT=5;
 
 const ValidationError=(message)=>{
@@ -61,6 +61,12 @@ export const placeBidService= async({amount, userId, auctionId})=>{
             include:{
                 user:true
             }
+        })
+        io.emit("bid:placed",{
+            auctionId,
+            newPrice:amount,
+            highestBid:bid,
+            highestBidder:bid.user
         })
         const updatedAuction=await tx.auctionItem.findUnique({
             where:{
