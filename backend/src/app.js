@@ -1,15 +1,21 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { Server } from 'socket.io';
 import http from 'http';
 import auctionRoutes from './routes/auction.routes.js'
 import bidRoutes from './routes/bid.routes.js'
+import authRoutes from './routes/auth.routes.js'
 dotenv.config();
 
 const app=express();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,   
+}));
+app.use(cookieParser());
 app.use(express.json());
 
 const server=http.createServer(app);
@@ -22,11 +28,22 @@ export const io=new Server(server,{
 io.on("connection",(socket)=>{
     console.log("User Connected",socket.id);
 
+    socket.on("join-auction",(auctionId)=>{
+        socket.join(`auction_${auctionId}`);
+        console.log(`User ${socket.id} joined room auction_${auctionId}`);
+    })
+
+    socket.on("leave-auction",(auctionId)=>{
+        socket.leave(`auction_${auctionId}`);
+        console.log(`User ${socket.id} left room auction_${auctionId}`);
+    })
+
     socket.on("disconnect",()=>{
         console.log("User Disconnected",socket.id)
     })
 })
 
+app.use("/auth",authRoutes)
 app.use("/api/auctions",auctionRoutes);
 app.use("/api/bids",bidRoutes);
 

@@ -59,7 +59,7 @@ export const placeBidService= async({amount, userId, auctionId})=>{
                 user:true
             }
         })
-        io.emit("bid:placed",{
+        io.to(`auction_${auctionId}`).emit("bid:placed",{
             auctionId,
             newPrice:amount,
             highestBid:bid,

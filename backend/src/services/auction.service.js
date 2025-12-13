@@ -1,10 +1,14 @@
 import prisma from "../prisma.js";
 import { auctionQueue } from "../queues/auction.queue.js";
-export const createAuctionService= async (data)=>{
-    const { title, description, imageUrl, startPrice, startTime, endTime, sellerId } = data;
+export const createAuctionService= async (data,userId)=>{
+    const { title, description, imageUrl, startPrice, startTime, endTime } = data;
+    const sellerId=userId;
 
-    if (!title || !description || !imageUrl || !startPrice || !startTime || !endTime || !sellerId) 
+    if (!title || !description || !imageUrl || !startPrice || !startTime || !endTime) 
         throw new Error("Missing required fields");
+    if (!sellerId){
+        throw new Error("User not logged in");
+    }
     
     const auction=await prisma.auctionItem.create({
         data:{

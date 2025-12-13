@@ -3,7 +3,8 @@ import { createAuctionService, getActiveAuctionsService, getAuctionByIdService, 
 export const createAuction = async (req,res)=>{
     try{
         const data=req.body;
-        const result=await createAuctionService(data);
+        const userId=req.user.userId;
+        const result=await createAuctionService(data,userId);
         return res.status(201).json(result);
     }
     catch(error){

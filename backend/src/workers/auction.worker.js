@@ -18,7 +18,7 @@ export const auctionWorker = new Worker(
                 where:{ id:auctionId },
                 data:{ status:"ACTIVE" }
             })
-            io.emit("auction:started",{ auctionId });
+            io.to(`auction_${auctionId}`).emit("auction:started",{ auctionId });
             console.log(`Auction started:${auction.title}`);
         }
 
@@ -34,7 +34,7 @@ export const auctionWorker = new Worker(
                 where:{id:auctionId},
                 data:{status:"CLOSED"}
             })
-            io.emit("auction:ended",{
+            io.to(`auction_${auctionId}`).emit("auction:ended",{
                 auctionId,
                 winner:highestBid
             })

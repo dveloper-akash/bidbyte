@@ -2,9 +2,13 @@ import { placeBidService } from "../services/bid.service.js";
 
 export const placeBid= async(req,res)=>{
     try{
-        const { amount, userId, auctionId}=req.body;
-        if(!amount || !userId || !auctionId){
+        const { amount, auctionId }=req.body;
+        const { userId }=req.user;
+        if(!amount || !auctionId){
             return res.status(400).json({error:"Required fields are missing"});
+        }
+        if(!userId){
+            return res.status(400).json({error:"User not logged in"});
         }
         const numericAmount=Number(amount);
         if(Number.isNaN(numericAmount) || numericAmount<=0){
