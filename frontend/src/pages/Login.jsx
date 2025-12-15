@@ -22,7 +22,7 @@ const Login=()=>{
     }
   }
   return(
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="h-full  flex items-center justify-center">
       <div className="bg-slate-800 p-8 rounded-xl shadow-lg text-center flex flex-col gap-6 items-center justify-center">
         <h1 className="text-2xl font-bold text-white">Sign in to BidByte</h1>
         <GoogleLogin
