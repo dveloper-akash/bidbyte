@@ -27,7 +27,7 @@ const Navbar=()=>{
                     </div>
                     <div className="md:hidden">
                         { user ? (
-                            <button onClick={logout} classname="text-sm font-medium text-amber-600">
+                            <button onClick={logout} className="text-sm font-medium text-amber-600">
                                 Logout
                             </button>
                         ):(

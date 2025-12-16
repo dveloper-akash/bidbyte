@@ -3,6 +3,7 @@ import ProtectedRoute from "../auth/ProtectedRoute"
 import Home from "../pages/Home"
 import Login from "../pages/Login"
 import MainLayout from "../components/layout/MainLayout"
+import AuctionDetail from "../pages/AuctionDetail"
 
 
 const AppRoutes = () => {
@@ -13,6 +14,12 @@ const AppRoutes = () => {
         <Route path='/' element={
           <ProtectedRoute>
             <Home/>
+          </ProtectedRoute>
+          }
+        />      
+        <Route path='/auction/:id' element={
+          <ProtectedRoute>
+            <AuctionDetail/>
           </ProtectedRoute>
           }
         />      
