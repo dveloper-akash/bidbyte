@@ -17,7 +17,7 @@ const getRemainingTimeParts = (endTime) => {
 
 const AuctionCard = ({auction}) => {
   const navigate=useNavigate();
-  const { id, title, imageUrl, currentPrice, startTime, endTime, status }=auction;
+  const { id, title, imageUrl,startPrice, currentPrice, startTime, endTime, status }=auction;
 
   const [remaining, setRemaining]= useState(()=> getRemainingTimeParts(endTime));
 
@@ -39,9 +39,24 @@ const AuctionCard = ({auction}) => {
       </div>
       <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
         <h3 className="font-semibold text-sm sm:text-base text-slate-800 line-clamp-1">{title}</h3>
-        {status !== "UPCOMING" && (
+
+        {status === "UPCOMING" && (
+          <div className="flex items-center justify-between text-xs sm:text:sm">
+            <span className="text-slate-500">Base Price</span>
+            <span className="font-semibold text-slate-800">₹{startPrice}</span>
+          </div>
+        )}
+
+        {status === "ACTIVE" && (
           <div className="flex items-center justify-between text-xs sm:text:sm">
             <span className="text-slate-500">Current Bid</span>
+            <span className="font-semibold text-slate-800">₹{currentPrice}</span>
+          </div>
+        )}
+
+        {status === "CLOSED" && (
+          <div className="flex items-center justify-between text-xs sm:text:sm">
+            <span className="text-slate-500">Closed Bid</span>
             <span className="font-semibold text-slate-800">₹{currentPrice}</span>
           </div>
         )}

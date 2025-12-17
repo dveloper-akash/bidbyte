@@ -6,12 +6,14 @@ import Spinner from "../components/ui/Spinner.jsx"
 import AuctionCountdown from "../components/auction/AuctionCountdown.jsx";
 import AuctionBidBox from "../components/auction/AuctionBidBox";
 import { CheckCircle } from "lucide-react";
+import { useAuth } from "../auth/useAuth.js";
 
 const socket = io(import.meta.env.VITE_BASE_URL,{
     withCredentials:true
 })
 
 const AuctionDetail=()=>{
+    const { user }=useAuth();
     const {id}=useParams();
     const [auction, setAuction]=useState(null);
     const [loading, setLoading]=useState(true);
@@ -72,7 +74,7 @@ const AuctionDetail=()=>{
         );
     }
 
-    const {title, imageUrl, currentPrice, startTime, endTime, status}=auction;
+    const {title, imageUrl, currentPrice, startTime, endTime, status, sellerId}=auction;
 
     return(
         <div className="h-full w-full px-4 py-6 space-y-6 max-w-3xl mx-auto">
@@ -95,7 +97,7 @@ const AuctionDetail=()=>{
 
             <AuctionCountdown endTime={endTime} status={status}/>
 
-            {status==="ACTIVE" && <AuctionBidBox auctionId={id} currentPrice={currentPrice} />}
+            {status==="ACTIVE" && sellerId!==user.id && <AuctionBidBox auctionId={id} currentPrice={currentPrice} />}
 
             {status === "UPCOMING" && (
                 <p className="text-center text-slate-500">

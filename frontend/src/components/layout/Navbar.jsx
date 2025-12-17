@@ -4,7 +4,7 @@ import { useAuth } from "../../auth/useAuth"
 const Navbar=()=>{
     const {user, logout}=useAuth();
     return(
-        <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
+        <nav className="fixed w-full  top-0 z-50 bg-white/80 backdrop-blur border-b border-slate-200">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex h-16 items-center justify-between">
                     <Link to="/" className="text-xl font-bold text-slate-800">
