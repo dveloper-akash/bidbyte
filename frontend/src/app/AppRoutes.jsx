@@ -5,6 +5,7 @@ import Login from "../pages/Login"
 import MainLayout from "../components/layout/MainLayout"
 import AuctionDetail from "../pages/AuctionDetail"
 import CreateAuction from "../pages/CreateAuction"
+import MyAuctions from "../pages/MyAuctions"
 
 
 const AppRoutes = () => {
@@ -21,6 +22,12 @@ const AppRoutes = () => {
         <Route path='/create-auction' element={
           <ProtectedRoute>
             <CreateAuction/>
+          </ProtectedRoute>
+          }
+        />      
+        <Route path='/my-auctions' element={
+          <ProtectedRoute>
+            <MyAuctions/>
           </ProtectedRoute>
           }
         />      
