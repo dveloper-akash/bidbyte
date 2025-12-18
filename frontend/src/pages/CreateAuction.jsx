@@ -49,7 +49,7 @@ const CreateAuction = () => {
         }
     }
   return (
-    <div className="h-full w-full px-4 py-6 max-w-xl mx-auto">
+    <div className="w-full px-4 py-6 max-w-xl mx-auto">
         <div className="mb-6">
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">Create Auction</h1>
             <p className="text-slate-500 text-sm mt-1">

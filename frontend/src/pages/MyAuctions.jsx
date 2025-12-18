@@ -26,7 +26,7 @@ const MyAuctions=()=>{
     },[]);
 
     return(
-        <div className="h-full w-full px-4 py-6 mx-auto ">
+        <div className="w-full px-4 py-6 mx-auto ">
             <div className="mb-6">
                 <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
                     My Auctions

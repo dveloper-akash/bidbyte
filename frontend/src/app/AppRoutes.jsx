@@ -14,9 +14,7 @@ const AppRoutes = () => {
       <Route element={<MainLayout/>}>
         <Route path='/login' element={<Login/>} />
         <Route path='/' element={
-          <ProtectedRoute>
             <Home/>
-          </ProtectedRoute>
           }
         />      
         <Route path='/create-auction' element={

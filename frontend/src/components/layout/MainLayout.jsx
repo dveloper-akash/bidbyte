@@ -4,9 +4,9 @@ import PageContainer from "./PageContainer"
 
 const MainLayout = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-100">
+    <div className="h-screen overflow-hidden flex flex-col  bg-slate-100">
         <Navbar/>
-        <main className="flex-1 pt-16">
+        <main className="flex-1 overflow-y-auto ">
             {/* <PageContainer > */}
                 <Outlet/>
             {/* </PageContainer> */}

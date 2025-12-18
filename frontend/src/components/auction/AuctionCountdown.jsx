@@ -25,9 +25,7 @@ const AuctionCountdown =({endTime,status})=>{
         <div className="flex items-center gap-2 text-amber-600 text-sm sm:text-base">
             <Clock size={16} />
             <span className="font-medium">
-                {remaining.totalSeconds <= 0
-                ? "Ended"
-                : remaining.totalSeconds > 300
+                { remaining.totalSeconds > 300
                 ? `Ends in ${
                     remaining.days
                         ? `${remaining.days}d `

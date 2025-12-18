@@ -7,62 +7,69 @@ import AuctionCountdown from "../components/auction/AuctionCountdown.jsx";
 import AuctionBidBox from "../components/auction/AuctionBidBox";
 import { CheckCircle } from "lucide-react";
 import { useAuth } from "../auth/useAuth.js";
+import { socket } from "../lib/socket.js";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "../lib/reactQuery.js";
 
-const socket = io(import.meta.env.VITE_BASE_URL,{
-    withCredentials:true
-})
+const fetchAuction = async ({ queryKey }) => {
+  const [, id] = queryKey;
+  const res = await api.get(`/api/auctions/${id}`);
+  return res.data;
+};
 
 const AuctionDetail=()=>{
     const { user }=useAuth();
     const {id}=useParams();
-    const [auction, setAuction]=useState(null);
-    const [loading, setLoading]=useState(true);
+    
+    const {data: auction, isLoading} = useQuery({
+        queryKey: ["auction", id],
+        queryFn: fetchAuction,
+        enabled: !!id,
+    });
 
-    useEffect(()=>{
-        const fetchAuction=async()=>{
-            try{
-                const res=await api.get(`/api/auctions/${id}`);
-                setAuction(res.data);
-            }
-            catch(err){
-                console.error("Failed to load auction",err);
-            }
-            finally{
-                setLoading(false);
-            }
-        }
-        fetchAuction();
-    },[id]);
-
-    useEffect(()=>{
+    useEffect(() => {
         if (!id) return;
 
         socket.emit("auction:join", id);
-        socket.on("bid:placed", (data)=>{
-            if(data.auctionId===id){
-                setAuction((prev)=>
-                    prev? {...prev,currentPrice:data.newPrice} : prev
-                )
-            }
-        })
 
-        socket.on("auction:ended",(data)=>{
-            if (data.auctionid === id){
-                setAuction((prev)=>{
-                    prev ? {...prev,status:"CLOSED"} : prev
-                })
+        const handleBidPlaced = (data) => {
+            if (data.auctionId === id) {
+            queryClient.setQueryData(["auction", id], (prev) =>
+                prev ? { ...prev, currentPrice: data.newPrice } : prev
+            );
             }
-        })
+        };
+
+        const handleAuctionStarted = (data) => {
+            if (data.auctionId === id) {
+            queryClient.setQueryData(["auction", id], (prev) =>
+                prev ? { ...prev, status: "ACTIVE" } : prev
+            );
+            }
+        };
+
+        const handleAuctionEnded = (data) => {
+            if (data.auctionId === id) {
+            queryClient.setQueryData(["auction", id], (prev) =>
+                prev ? { ...prev, status: "CLOSED" } : prev
+            );
+            }
+        };
+
+        socket.on("bid:placed", handleBidPlaced);
+        socket.on("auction:started", handleAuctionStarted);
+        socket.on("auction:ended", handleAuctionEnded);
 
         return () => {
             socket.emit("auction:leave", id);
-            socket.off("bid:placed");
-            socket.off("auction:ended");
+            socket.off("bid:placed", handleBidPlaced);
+            socket.off("auction:started", handleAuctionStarted);
+            socket.off("auction:ended", handleAuctionEnded);
         };
+    }, [id]);
 
-    },[id])
 
-    if (loading) {
+    if (isLoading) {
         return <Spinner/>;
     }
 
@@ -77,7 +84,7 @@ const AuctionDetail=()=>{
     const {title, imageUrl, currentPrice, startTime, endTime, status, sellerId}=auction;
 
     return(
-        <div className="h-full w-full px-4 py-6 space-y-6 max-w-3xl mx-auto">
+        <div className="w-full px-4 py-6 space-y-6 max-w-3xl mx-auto">
 
             <div className="w-full h-56 sm:h-64 bg-slate-200 rounded-xl overflow-hidden">
                 <img src={imageUrl} alt={title} className="w-full h-full object-cover" />
