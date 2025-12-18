@@ -2,12 +2,12 @@ import { OAuth2Client} from "google-auth-library";
 import jwt from "jsonwebtoken";
 import prisma from "../prisma.js";
 
-const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
 export const googleAuthService=async(idToken)=>{
     if(!idToken){
         throw new Error("Token ID Missing");
     }
+    const client=new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
     const ticket=await client.verifyIdToken({
         idToken,
         audience:process.env.GOOGLE_CLIENT_ID
@@ -38,4 +38,20 @@ export const googleAuthService=async(idToken)=>{
     )
 
     return { token, user };
+}
+
+export const getAuthUserService=async(userId)=>{
+    const user=await prisma.user.findUnique({
+        where:{id:userId},
+        select:{
+            id:true,
+            name:true,
+            email:true,
+            avatarUrl:true
+        }
+    })
+    if(!user){
+        throw new Error("User not found");
+    }
+    return user;
 }

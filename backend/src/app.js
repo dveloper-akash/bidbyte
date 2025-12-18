@@ -11,9 +11,15 @@ dotenv.config();
 
 const app=express();
 
+app.use((req, res, next) => {
+  console.log("Incoming:", req.method, req.url);
+  next();
+});
+
+
 app.use(cors({
     origin: "http://localhost:5173",
-    credentials: true,   
+    credentials: true
 }));
 app.use(cookieParser());
 app.use(express.json());
@@ -21,19 +27,20 @@ app.use(express.json());
 const server=http.createServer(app);
 export const io=new Server(server,{
     cors:{
-        origin:"*",
-        methods:["GET","POST"]
+        origin:"http://localhost:5173",
+        methods:["GET","POST"],
+        credentials:true
     }
 })
 io.on("connection",(socket)=>{
     console.log("User Connected",socket.id);
 
-    socket.on("join-auction",(auctionId)=>{
+    socket.on("auction:join",(auctionId)=>{
         socket.join(`auction_${auctionId}`);
         console.log(`User ${socket.id} joined room auction_${auctionId}`);
     })
 
-    socket.on("leave-auction",(auctionId)=>{
+    socket.on("auction:leave",(auctionId)=>{
         socket.leave(`auction_${auctionId}`);
         console.log(`User ${socket.id} left room auction_${auctionId}`);
     })

@@ -13,16 +13,19 @@ export const auctionWorker = new Worker(
             }
         })
         if (!auction) return;
-        if (job.name==="startAuction"){
+        if (job.name==="startAuction" && auction.status ==="UPCOMING"){
             await prisma.auctionItem.update({
                 where:{ id:auctionId },
                 data:{ status:"ACTIVE" }
+            })
+            io.emit("auction:statusChanged",{
+                auctionId,from:"UPCOMING",to:"ACTIVE"
             })
             io.to(`auction_${auctionId}`).emit("auction:started",{ auctionId });
             console.log(`Auction started:${auction.title}`);
         }
 
-        if(job.name==="endAuction"){
+        if(job.name==="endAuction" && auction.status==="ACTIVE"){
             const highestBid=await prisma.bid.findFirst({
                 where:{auctionId},
                 orderBy:{amount:"desc"},
@@ -33,6 +36,9 @@ export const auctionWorker = new Worker(
             await prisma.auctionItem.update({
                 where:{id:auctionId},
                 data:{status:"CLOSED"}
+            })
+            io.emit("auction:statusChanged",{
+                auctionId,from:"ACTIVE",to:"CLOSED"
             })
             io.to(`auction_${auctionId}`).emit("auction:ended",{
                 auctionId,

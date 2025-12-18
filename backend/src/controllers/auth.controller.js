@@ -1,4 +1,4 @@
-import { googleAuthService } from "../services/auth.service.js";
+import { getAuthUserService, googleAuthService } from "../services/auth.service.js";
 
 
 export const googleAuth= async (req,res)=>{
@@ -19,4 +19,17 @@ export const googleAuth= async (req,res)=>{
         console.error("Auth Error:",error);
         res.status(401).json({ error:error.message });
     }
+}
+
+export const getAuthUser= async(req,res)=>{
+    try{
+        const { userId }=req.user;
+        const result=await getAuthUserService(userId);
+        res.status(200).json(result)
+    }
+    catch(error){
+        console.error("error:",error);
+        res.status(401).json({error:error.message})
+    }
+
 }

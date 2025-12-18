@@ -1,4 +1,4 @@
-import { createAuctionService, getActiveAuctionsService, getAuctionByIdService, getClosedAuctionsService, getUpcomingAuctionsService } from "../services/auction.service.js";
+import { createAuctionService, getActiveAuctionsService, getAuctionByIdService, getClosedAuctionsService, getMyAuctionsService, getUpcomingAuctionsService } from "../services/auction.service.js";
 
 export const createAuction = async (req,res)=>{
     try{
@@ -45,11 +45,29 @@ export const getClosedAuctions= async (req,res)=>{
 }
 export const getAuctionById=async(req,res)=>{
     try{
-        const result=await getAuctionByIdService(req.params.id);
+        const id=req.params.id;
+        if(!id){
+            return res.status(400).json({error:"AuctionId not found"});
+        }
+        const result=await getAuctionByIdService(id);
         return res.status(200).json(result);
     }
     catch(error){
         console.log("Get Auction By Id Error:",error)
+        return res.status(500).json({error:error.message})
+    }
+}
+export const getMyAuctions=async(req,res)=>{
+    try{
+        const {userId}=req.user;
+        if(!userId){
+            return res.status(400).json({error:"User not logged in"});
+        }
+        const result=await getMyAuctionsService(userId);
+        return res.status(200).json(result);
+    }
+    catch(error){
+        console.log("Get My Auctions Error:",error);
         return res.status(500).json({error:error.message})
     }
 }

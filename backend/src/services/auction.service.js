@@ -1,3 +1,4 @@
+import { io } from "../app.js";
 import prisma from "../prisma.js";
 import { auctionQueue } from "../queues/auction.queue.js";
 export const createAuctionService= async (data,userId)=>{
@@ -23,7 +24,9 @@ export const createAuctionService= async (data,userId)=>{
             status:"UPCOMING"
         }
     })
-    
+    io.emit("auction:created",{
+        status:auction.status
+    })
     const now=Date.now();
     const startDelay=new Date(startTime).getTime()-now;
     const endDelay=new Date(endTime).getTime()-now;
@@ -83,6 +86,16 @@ export const getAuctionByIdService=async(id)=>{
                 }
             },
             seller:true
+        }
+    })
+}
+export const getMyAuctionsService=async(userId)=>{
+    return prisma.auctionItem.findMany({
+        where:{
+            sellerId:userId
+        },
+        orderBy:{
+            createdAt:"desc"
         }
     })
 }

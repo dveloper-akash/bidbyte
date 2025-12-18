@@ -4,6 +4,7 @@ export const verifyToken=(req,res,next)=>{
 
     const token=req.cookies.token;
     if(!token){
+        console.error("token not found");
         res.status(401).json({ error: "Missing Token" })
     }
     try{
