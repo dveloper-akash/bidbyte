@@ -2,6 +2,7 @@ import {Worker} from 'bullmq';
 import { redis } from '../config/redis.js';
 import { io } from '../app.js';
 import prisma from '../prisma.js';
+import { sendWinnerMail } from '../services/mailer.js';
 
 export const auctionWorker = new Worker(
     "auctionQueue",
@@ -44,6 +45,21 @@ export const auctionWorker = new Worker(
                 auctionId,
                 winner:highestBid
             })
+            if (highestBid?.user.email) {
+                try {
+                    await sendWinnerMail({
+                        to: highestBid.user.email,
+                        name:highestBid.user.name || "",
+                        title:auction.title,
+                        amount: highestBid.amount,
+                    });
+                    console.log("Winner email sent");
+                } 
+                catch (err) {
+                    console.error("Failed to send winner email", err);
+                }
+            }
+
             console.log(`Auction ended:${auction.title}`);
             console.log("Auction winner:",highestBid);
         }
