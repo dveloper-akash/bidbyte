@@ -1,4 +1,4 @@
-import { useEffect, } from "react";
+import { useEffect, useState, } from "react";
 import { useParams } from "react-router-dom";
 import api from "../lib/axios.js"
 import Spinner from "../components/ui/Spinner.jsx"
@@ -18,6 +18,7 @@ const fetchAuction = async ({ queryKey }) => {
 };
 
 const AuctionDetail=()=>{
+    const [locallyEnded, setLocallyEnded] = useState(false);
     const { user,isAuthenticated }=useAuth();
     const {id}=useParams();
     
@@ -49,6 +50,7 @@ const AuctionDetail=()=>{
         };
 
         const handleAuctionEnded = (data) => {
+            console.log("auction ended")
             if (data.auctionId === id) {
             queryClient.setQueryData(["auction", id], (prev) =>
                 prev ? { ...prev, status: "CLOSED" } : prev
@@ -130,9 +132,9 @@ const AuctionDetail=()=>{
                 </div>
 
 
-            <AuctionCountdown endTime={endTime} status={status}/>
+            <AuctionCountdown endTime={endTime} status={status} onEnd={() => setLocallyEnded(true)}/>
 
-            {isAuthenticated && status==="ACTIVE" && sellerId!==user.id && <AuctionBidBox auctionId={id} currentPrice={currentPrice} />}   
+            {isAuthenticated && !locallyEnded && status==="ACTIVE" && sellerId!==user.id && <AuctionBidBox auctionId={id} currentPrice={currentPrice} />}   
 
             {status === "UPCOMING" && (
                 <p className="text-center text-slate-500">
