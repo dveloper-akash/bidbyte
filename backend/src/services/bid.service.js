@@ -11,6 +11,13 @@ const ValidationError=(message)=>{
 export const placeBidService= async({amount, userId, auctionId})=>{
     const now = new Date();
     return prisma.$transaction(async(tx)=>{
+
+        const previousHighest = await tx.bid.findFirst({
+            where: { auctionId },
+            orderBy: { amount: "desc" },
+            select: { userId: true },
+        });
+        console.log("PrevHighest:",previousHighest);
         const auction=await tx.auctionItem.findUnique({
             where:{
                 id:auctionId
@@ -63,8 +70,26 @@ export const placeBidService= async({amount, userId, auctionId})=>{
             auctionId,
             newPrice:amount,
             highestBid:bid,
-            highestBidder:bid.user
+            highestBidder:bid.user.name
         })
+        io.emit("bidPlaced:changes",{
+            auctionId,
+            newPrice:amount
+        })
+
+        if (previousHighest && previousHighest.userId !== userId) {
+            console.log("📣 Emitting OUTBID to", previousHighest.userId);
+            io.to(`user_${previousHighest.userId}`).emit("bid:status", {
+                type: "OUTBID",
+                auctionId,
+            });
+            
+        }
+        console.log("📣 Emitting HIGHEST to", userId);
+        io.to(`user_${userId}`).emit("bid:status", {
+        type: "HIGHEST",
+        auctionId,
+        });
         const updatedAuction=await tx.auctionItem.findUnique({
             where:{
                 id:auctionId

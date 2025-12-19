@@ -20,6 +20,23 @@ export const googleAuth= async (req,res)=>{
         res.status(401).json({ error:error.message });
     }
 }
+export const logoutUser = (req,res)=>{
+    try{
+        res.cookie("token","",{
+            httpOnly: true,
+            secure: true,  
+            sameSite: "none",
+            expires: new Date(0)
+        })
+        res.status(200).json({ message: "Logged out successfully"})
+        console.log("Logout successfully");
+    }
+    catch(error){
+        console.error("Logout Error:",error);
+        res.status(401).json({ error:error.message });
+    }
+    
+}
 
 export const getAuthUser= async(req,res)=>{
     try{
