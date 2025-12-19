@@ -1,6 +1,5 @@
-import { useEffect,useState } from "react";
+import { useEffect, } from "react";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
 import api from "../lib/axios.js"
 import Spinner from "../components/ui/Spinner.jsx"
 import AuctionCountdown from "../components/auction/AuctionCountdown.jsx";
@@ -10,6 +9,7 @@ import { useAuth } from "../auth/useAuth.js";
 import { socket } from "../lib/socket.js";
 import { useQuery } from "@tanstack/react-query";
 import { queryClient } from "../lib/reactQuery.js";
+import toast from "react-hot-toast";
 
 const fetchAuction = async ({ queryKey }) => {
   const [, id] = queryKey;
@@ -18,7 +18,7 @@ const fetchAuction = async ({ queryKey }) => {
 };
 
 const AuctionDetail=()=>{
-    const { user }=useAuth();
+    const { user,isAuthenticated }=useAuth();
     const {id}=useParams();
     
     const {data: auction, isLoading} = useQuery({
@@ -55,8 +55,22 @@ const AuctionDetail=()=>{
             );
             }
         };
+        const handleBidStatus=(data)=>{
+
+            if(data.auctionId===id){
+
+                if (data.type === "OUTBID") {
+                    toast.error("You've been outbid");
+                }
+
+                if (data.type === "HIGHEST") {
+                    toast.success("You're the highest bidder");
+                }
+            }
+        }
 
         socket.on("bid:placed", handleBidPlaced);
+        socket.on("bid:status", handleBidStatus);
         socket.on("auction:started", handleAuctionStarted);
         socket.on("auction:ended", handleAuctionEnded);
 
@@ -65,6 +79,7 @@ const AuctionDetail=()=>{
             socket.off("bid:placed", handleBidPlaced);
             socket.off("auction:started", handleAuctionStarted);
             socket.off("auction:ended", handleAuctionEnded);
+            socket.off("bid:status", handleBidStatus);
         };
     }, [id]);
 
@@ -92,24 +107,41 @@ const AuctionDetail=()=>{
 
             <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-800">{title}</h1>
-                <p className="text-sm text-slate-500 capitalize">Status: {status.toLowerCase()}</p>
+                <p className="text-sm text-slate-500 capitalize">Status:
+                    {status==="UPCOMING" && ( <span className="text-blue-500">{status.toLowerCase()}</span>)} 
+                    {status==="ACTIVE" && (<span className="text-green-500">{status.toLowerCase()}</span>)} 
+                    {status==="CLOSED" && (<span className="text-red-500">{status.toLowerCase()}</span>)} 
+                    
+                </p>
             </div>
 
-            { status !== "UPCOMING" && (
+            
                 <div className="bg-white rounded-xl p-4 shadow-sm">
-                    <p className="text-slate-500 text-sm">Current Bid</p>
+                    {status==="ACTIVE" && (
+                        <p className="text-slate-500 text-sm">Current Bid</p>
+                    )}    
+                    {status==="UPCOMING" && (
+                        <p className="text-slate-500 text-sm">Base Price</p>
+                    )}    
+                    {status==="CLOSED" && (
+                        <p className="text-slate-500 text-sm">Closed Bid</p>
+                    )}    
                     <p className="text-3xl font-bold text-slate-800">₹{currentPrice}</p>
                 </div>
-            )}
+
 
             <AuctionCountdown endTime={endTime} status={status}/>
 
-            {status==="ACTIVE" && sellerId!==user.id && <AuctionBidBox auctionId={id} currentPrice={currentPrice} />}
+            {isAuthenticated && status==="ACTIVE" && sellerId!==user.id && <AuctionBidBox auctionId={id} currentPrice={currentPrice} />}   
 
             {status === "UPCOMING" && (
                 <p className="text-center text-slate-500">
                     Starts at {new Date(startTime).toLocaleString()}
                 </p>
+            )}
+
+            {!isAuthenticated && status==="ACTIVE" && (
+                <p className="text-center font-medium text-amber-700">Login to start bidding</p>
             )}
 
             {status === "CLOSED" && (

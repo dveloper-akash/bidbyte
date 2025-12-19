@@ -30,9 +30,7 @@ const AppRoutes = () => {
           }
         />      
         <Route path='/auction/:id' element={
-          <ProtectedRoute>
             <AuctionDetail/>
-          </ProtectedRoute>
           }
         />      
       </Route>      

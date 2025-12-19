@@ -36,9 +36,9 @@ const AuctionBidBox =({auctionId, currentPrice})=>{
 
             <input type="number" min={minBid} placeholder={`Minimum bid ₹${minBid}`} value={amount} onChange={(e)=>setAmount(e.target.value)} className="w-full px-3 py-2 rounded-lg border text-sm sm:text-base  focus:outline-none focus:ring-2 focus:ring-amber-400"/>
 
-            {amount && numericAmount < minBid && (
+            {/* {amount && numericAmount < minBid && (
                 <p className="text-xs text-red-500">Bid must be at least ₹{minBid}</p>
-            )}
+            )} */}
 
             <button
                 onClick={placeBid}

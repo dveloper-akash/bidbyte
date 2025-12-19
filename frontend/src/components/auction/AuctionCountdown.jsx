@@ -21,6 +21,14 @@ const AuctionCountdown =({endTime,status})=>{
 
     if (status !=="ACTIVE") return null;
 
+    if (remaining.totalSeconds <= 0 ) {
+        return (
+            <p className="text-left text-sm sm:text-base text-slate-500">
+            Finalizing auction…
+            </p>
+        );
+    }
+
     return(
         <div className="flex items-center gap-2 text-amber-600 text-sm sm:text-base">
             <Clock size={16} />

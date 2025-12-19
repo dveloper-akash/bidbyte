@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import api from '../lib/axios.js';
+import { useNavigate } from "react-router-dom";
 
 const AuthContext=createContext(null);
 
@@ -27,10 +28,10 @@ export const AuthProvider=({children})=>{
 
     const logout=async()=>{
         try{
-            await app.post("/auth/logout");
+            await api.post("/auth/logout");
         }
         catch(error){
-            console.error("Logout failed",err); 
+            console.error("Logout failed",error); 
         }
         finally{
             setUser(null)

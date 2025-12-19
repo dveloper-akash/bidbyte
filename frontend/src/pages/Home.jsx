@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../lib/axios.js"
 import AuctionGrid from "../components/auction/AuctionGrid.jsx";
+import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 const TABS=["active","upcoming","closed"];
 
@@ -11,7 +12,11 @@ const fetchAuctions = async ({ queryKey }) => {
 };
 
 const Home = () => {
-  const [status, setStatus] = useState("active");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const status = searchParams.get("tab") || "active";
+  const setStatus = (tab) => {
+    setSearchParams({ tab });
+  };
 
   const {
     data: auctions = [],
