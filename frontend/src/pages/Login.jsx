@@ -28,12 +28,13 @@ const Login = () => {
         idToken: response.credential,
       });
       setUser(res.data.user);
+      // navigate(from, { replace: true });
     } catch (err) {
       console.error("Login failed:", err);
       alert("Login failed. Try again.");
     }
   };
-
+  
 
   return (
     <div
