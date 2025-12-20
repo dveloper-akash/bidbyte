@@ -5,7 +5,7 @@ import { Toaster } from "react-hot-toast"
 
 const MainLayout = () => {
   return (
-    <div className="h-screen overflow-hidden flex flex-col  bg-slate-100">
+    <div className="h-dvh overflow-hidden flex flex-col  bg-slate-100">
         <Navbar/>
         <Toaster
         position="top-right"
