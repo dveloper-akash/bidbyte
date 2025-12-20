@@ -69,6 +69,9 @@ app.use("/api/bids",bidRoutes);
 app.get('/',(req,res)=>{
     res.send('BidByte Backend is running');
 })
+app.get('/health',(req,res)=>{
+    res.status(200).send("OK");
+})
 import "./workers/auction.worker.js"
 
 const PORT=process.env.PORT || 5000;
