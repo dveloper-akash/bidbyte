@@ -1,4 +1,4 @@
-# 🚀 BidByte — Real-Time Auction Platform
+# BidByte — Real-Time Auction Platform
 
 BidByte is a **production-grade real-time auction platform** that enables users to create auctions, place live bids, and receive instant updates without page refreshes.
 
@@ -6,9 +6,9 @@ It is designed with **scalability, correctness, and real-world architecture patt
 
 ---
 
-## 🌟 Features
+## Features
 
-### 🔐 Authentication
+### Authentication
 
 - Google OAuth login
 - Secure **HttpOnly cookie-based authentication**
@@ -17,7 +17,7 @@ It is designed with **scalability, correctness, and real-world architecture patt
 
 ---
 
-### 🏷️ Auction System
+### Auction System
 
 - Create auctions with:
   - Title
@@ -34,7 +34,7 @@ It is designed with **scalability, correctness, and real-world architecture patt
 
 ---
 
-### ⚡ Real-Time Bidding
+### Real-Time Bidding
 
 - Live bid updates using **Socket.IO**
 - No page refreshes
@@ -47,7 +47,7 @@ It is designed with **scalability, correctness, and real-world architecture patt
 
 ---
 
-### 🧠 Bid Logic & Safety
+### Bid Logic & Safety
 
 - Minimum bid increment enforced
 - Sellers cannot bid on their own auctions
@@ -57,7 +57,7 @@ It is designed with **scalability, correctness, and real-world architecture patt
 
 ---
 
-### 🔒 Authorization & Access Control
+### Authorization & Access Control
 
 - Guests can:
   - View auctions
@@ -70,7 +70,7 @@ It is designed with **scalability, correctness, and real-world architecture patt
 
 ---
 
-### 🔄 Real-Time Architecture Design
+### Real-Time Architecture Design
 
 - **Public Socket Events**
   - Live bid price updates
@@ -86,7 +86,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-### ⏱️ Background Job Processing
+### Background Job Processing
 
 - Auction start & end handled using **BullMQ**
 - Redis (Upstash) used for:
@@ -98,7 +98,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-### 📬 Notifications
+### Notifications
 
 - Auction end triggers:
   - Winner detection
@@ -110,7 +110,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-### 🧩 Data Consistency & Caching
+### Data Consistency & Caching
 
 - All critical operations wrapped in **database transactions**
 - React Query used for:
@@ -122,7 +122,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-### ⚠️ Error Handling
+### Error Handling
 
 - Server-side validation for all critical operations
 - Meaningful error messages for invalid bids
@@ -131,7 +131,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-### 🖥️ Frontend Experience
+### Frontend Experience
 
 - Mobile-first responsive UI
 - Clean, minimal, warm color palette
@@ -141,7 +141,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-## 🧭 System Flow (High-Level)
+## System Flow (High-Level)
 
 1. User places a bid
 2. Backend validates and updates bid transactionally
@@ -152,7 +152,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
 ### Frontend
 
@@ -185,7 +185,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-## ⚙️ Environment Variables
+## Environment Variables
 
 The application requires environment variables for:
 
@@ -197,13 +197,13 @@ The application requires environment variables for:
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
 BidByte was built to explore **real-world real-time system design**, focusing on correctness, scalability, and user experience rather than demo-only functionality.
 
 ---
 
-## 🚧 Future Enhancements
+## Future Enhancements
 
 - Auto-Bidding Bot
 - Dutch Auction Bot
@@ -215,7 +215,7 @@ BidByte was built to explore **real-world real-time system design**, focusing on
 
 ---
 
-## 📌 Note
+## Note
 
 This project demonstrates **production-level architectural thinking** and is suitable for:
 - Internship evaluations
