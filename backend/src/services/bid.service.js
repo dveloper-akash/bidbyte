@@ -84,7 +84,10 @@ const broadcastBidEvents = ({
     highestBidder: bid.user.name,
   });
 
-
+  io.emit("bidPlaced:changes",{
+    auctionId,
+    newPrice:bid.amount
+  })
   if (previousHighestUserId && previousHighestUserId !== userId) {
     io.to(`user_${previousHighestUserId}`).emit("bid:status", {
       type: "OUTBID",
