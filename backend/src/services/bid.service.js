@@ -1,103 +1,117 @@
 import prisma from "../prisma.js";
 import { io } from "../app.js";
-const MIN_BID_INCREMENT=5;
 
-const ValidationError=(message)=>{
-    const error=new Error(message);
-    error.code="BID_VALIDATION";
-    return error;
-}
+const MIN_BID_INCREMENT = 5;
 
-export const placeBidService= async({amount, userId, auctionId})=>{
-    const now = new Date();
-    return prisma.$transaction(async(tx)=>{
+const ValidationError = (message) => {
+  const err = new Error(message);
+  err.code = "BID_VALIDATION";
+  return err;
+};
 
-        const previousHighest = await tx.bid.findFirst({
-            where: { auctionId },
-            orderBy: { amount: "desc" },
-            select: { userId: true },
-        });
-        console.log("PrevHighest:",previousHighest);
-        const auction=await tx.auctionItem.findUnique({
-            where:{
-                id:auctionId
-            },
-            include:{
-                seller:true
-            }
-        })
-        if(!auction){
-            throw ValidationError("Auction not found");
-        }
-        if(auction.status==="UPCOMING"){
-            throw ValidationError("Auction has not started yet");
-        }
-        if(auction.status==="CLOSED"){
-            throw ValidationError("Auction has already ended");
-        }
-        if(auction.sellerId===userId){
-            throw ValidationError("You cannot bid on your own auction")
-        }
-        const baselinePrice=auction.currentPrice;
-        if(amount<baselinePrice + MIN_BID_INCREMENT){
-            throw ValidationError(`Bid must be atleast ${MIN_BID_INCREMENT} higher than the current price (>= ₹${
-                baselinePrice + MIN_BID_INCREMENT
-            })`)
-        }
-        const updatedCount=await tx.auctionItem.updateMany({
-            where:{
-                id:auctionId,
-                currentPrice:{lt:amount}
-            },
-            data:{
-                currentPrice:amount
-            }
-        })
-        if (updatedCount.count===0){
-            throw ValidationError("You have been outbid by another user. Please refresh the price and try again.")
-        }
-        const bid =await tx.bid.create({
-            data:{
-                amount,
-                userId,
-                auctionId
-            },
-            include:{
-                user:true
-            }
-        })
-        io.to(`auction_${auctionId}`).emit("bid:placed",{
-            auctionId,
-            newPrice:amount,
-            highestBid:bid,
-            highestBidder:bid.user.name
-        })
-        io.emit("bidPlaced:changes",{
-            auctionId,
-            newPrice:amount
-        })
+const placeBidTransaction = async (tx, { amount, userId, auctionId }) => {
+  const previousHighest = await tx.bid.findFirst({
+    where: { auctionId },
+    orderBy: { amount: "desc" },
+    select: { userId: true },
+  });
+  const auction = await tx.auctionItem.findUnique({
+    where: { id: auctionId },
+  });
 
-        if (previousHighest && previousHighest.userId !== userId) {
-            console.log("📣 Emitting OUTBID to", previousHighest.userId);
-            io.to(`user_${previousHighest.userId}`).emit("bid:status", {
-                type: "OUTBID",
-                auctionId,
-            });
-            
-        }
-        console.log("📣 Emitting HIGHEST to", userId);
-        io.to(`user_${userId}`).emit("bid:status", {
-        type: "HIGHEST",
-        auctionId,
-        });
-        const updatedAuction=await tx.auctionItem.findUnique({
-            where:{
-                id:auctionId
-            },
-            include:{
-                seller:true
-            }
-        })
-        return {bid,auction:updatedAuction};
-    })
-}
+  if (!auction) throw ValidationError("Auction not found");
+  if (auction.status === "UPCOMING")
+    throw ValidationError("Auction has not started yet");
+  if (auction.status === "CLOSED")
+    throw ValidationError("Auction has already ended");
+  if (auction.sellerId === userId)
+    throw ValidationError("You cannot bid on your own auction");
+
+  const minAllowed = auction.currentPrice + MIN_BID_INCREMENT;
+  if (amount < minAllowed) {
+    throw ValidationError(`Bid must be at least ₹${minAllowed}`);
+  }
+
+  const updated = await tx.auctionItem.updateMany({
+    where: {
+      id: auctionId,
+      currentPrice: { lt: amount },
+    },
+    data: { currentPrice: amount },
+  });
+
+  if (updated.count === 0) {
+    throw ValidationError(
+      "You have been outbid by another user. Please refresh and try again."
+    );
+  }
+
+  const bid = await tx.bid.create({
+    data: {
+      amount,
+      userId,
+      auctionId,
+    },
+    select: {
+      id: true,
+      amount: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  return {
+    bid,
+    previousHighestUserId: previousHighest?.userId ?? null,
+  };
+};
+
+const broadcastBidEvents = ({
+  bid,
+  auctionId,
+  userId,
+  previousHighestUserId,
+}) => {
+
+  io.to(`auction_${auctionId}`).emit("bid:placed", {
+    auctionId,
+    newPrice: bid.amount,
+    highestBid: bid,
+    highestBidder: bid.user.name,
+  });
+
+
+  if (previousHighestUserId && previousHighestUserId !== userId) {
+    io.to(`user_${previousHighestUserId}`).emit("bid:status", {
+      type: "OUTBID",
+      auctionId,
+    });
+  }
+
+  io.to(`user_${userId}`).emit("bid:status", {
+    type: "HIGHEST",
+    auctionId,
+  });
+};
+
+
+export const placeBidService = async ({ amount, userId, auctionId }) => {
+
+  const result = await prisma.$transaction((tx) =>
+    placeBidTransaction(tx, { amount, userId, auctionId })
+  );
+
+  broadcastBidEvents({
+    bid: result.bid,
+    auctionId,
+    userId,
+    previousHighestUserId: result.previousHighestUserId,
+  });
+
+
+  return result;
+};

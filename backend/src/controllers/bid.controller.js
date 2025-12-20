@@ -14,11 +14,10 @@ export const placeBid= async(req,res)=>{
         if(Number.isNaN(numericAmount) || numericAmount<=0){
             return res.status(400).json({error:"Amount must be a positive number"});
         }
-        const { bid, auction }=await placeBidService({ amount:numericAmount, userId, auctionId});
+        await placeBidService({ amount:numericAmount, userId, auctionId});
         return res.status(201).json({
+            success:true,
             message: "Bid placed successfully",
-            bid,
-            auction
         })
     }
     catch(error){
