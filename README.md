@@ -42,8 +42,8 @@ It is designed with **scalability, correctness, and real-world architecture patt
   - Current highest bid
   - Auction start & end
 
-- Optimized countdown logic  
-  (frequent updates only in the final minutes)
+- Optimized live countdown logic  
+
 
 ---
 
@@ -141,7 +141,7 @@ Private events are delivered through **user-scoped socket rooms**.
 
 ---
 
-## System Flow (High-Level)
+## System Flow
 
 1. User places a bid
 2. Backend validates and updates bid transactionally
@@ -180,7 +180,7 @@ Private events are delivered through **user-scoped socket rooms**.
 - Frontend: Vercel
 - Backend: Render
 - Redis: Upstash
-- Database: PostgreSQL (Neon or equivalent)
+- Database: PostgreSQL (Neon)
 - Uptime Monitoring: External uptime bot
 
 ---
