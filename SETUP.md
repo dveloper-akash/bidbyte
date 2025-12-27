@@ -186,13 +186,13 @@ npm run dev
 
 ## Testing the Full Flow
 
-**1.** Login using Google OAuth
-**2.** Create an auction
-**3.** Open the auction page in two browsers
-**4.** Place bids and observe real-time updates
-**5.** Wait for the auction to end
-**6.** Winner is finalized via BullMQ
-**7.** Email is sent via Nodemailer (local SMTP)
+1. Login using Google OAuth
+2. Create an auction
+3. Open the auction page in two browsers
+4. Place bids and observe real-time updates
+5. Wait for the auction to end
+6. Winner is finalized via BullMQ
+7. Email is sent via Nodemailer (local SMTP)
 
 ---
 
