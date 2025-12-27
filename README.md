@@ -1,6 +1,6 @@
 # BidByte — Real-Time Auction Platform
 
-**Hosted Link** bidbyte.vercel.app
+[App Link](bidbyte.vercel.app)
 
 BidByte is a **production-grade real-time auction platform** that enables users to create auctions, place live bids, and receive instant updates without page refreshes.
 
