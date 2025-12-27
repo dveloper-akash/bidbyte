@@ -211,4 +211,4 @@ BidByte was built to explore **real-world real-time system design**, focusing on
 - SMS alerts
 - Advanced auction analytics
 - Admin moderation dashboard
-- Scaling Backend using Redis
+- Scaling Backend 
