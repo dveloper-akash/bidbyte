@@ -64,5 +64,9 @@ export const auctionWorker = new Worker(
             console.log("Auction winner:",highestBid);
         }
     },
-    {connection:redis}
+    {
+        connection:redis,
+        drainDelay: 5000,
+        stalledInterval: 60000
+    }
 )
